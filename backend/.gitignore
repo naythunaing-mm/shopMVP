@@ -1,0 +1,26 @@
+# Laravel dependencies
+/vendor/
+node_modules/
+
+# Environment files
+.env
+.env.*
+.env.php
+.env.backup
+
+# Laravel specific
+/public/storage
+/storage/*.key
+/storage/logs
+/storage/framework/cache
+/storage/framework/sessions
+/storage/framework/views
+
+# IDE & OS files
+/.idea/
+/.vscode/
+*.swp
+*.swo
+*.log
+*.DS_Store
+Thumbs.db

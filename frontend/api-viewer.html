@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Laravel API Complete Response Viewer</title>
+    <style>
+      body {
+        font-family: 'Courier New', monospace;
+        margin: 20px;
+        background-color: #1e1e1e;
+        color: #ffffff;
+        line-height: 1.6;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .header {
+        text-align: center;
+        border-bottom: 2px solid #4caf50;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+      }
+      .section {
+        margin-bottom: 30px;
+        padding: 20px;
+        background-color: #2d2d2d;
+        border-radius: 8px;
+        border-left: 4px solid #4caf50;
+      }
+      .section h2 {
+        color: #4caf50;
+        margin-top: 0;
+      }
+      .product-card {
+        background-color: #3d3d3d;
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 5px;
+        border: 1px solid #555;
+      }
+      .product-header {
+        color: #ffd700;
+        font-weight: bold;
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+      .field {
+        margin: 5px 0;
+      }
+      .field-name {
+        color: #87ceeb;
+        font-weight: bold;
+        display: inline-block;
+        width: 150px;
+      }
+      .field-value {
+        color: #ffffff;
+      }
+      .json-output {
+        background-color: #1a1a1a;
+        padding: 20px;
+        border-radius: 5px;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        font-size: 12px;
+        border: 1px solid #555;
+      }
+      .status-active {
+        color: #4caf50;
+      }
+      .status-inactive {
+        color: #f44336;
+      }
+      .featured-yes {
+        color: #ffd700;
+      }
+      .featured-no {
+        color: #999;
+      }
+      .refresh-btn {
+        background-color: #4caf50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-bottom: 20px;
+      }
+      .refresh-btn:hover {
+        background-color: #45a049;
+      }
+      .loading {
+        text-align: center;
+        color: #ffd700;
+        font-size: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🚀 Laravel API Complete Response Viewer</h1>
+        <button class="refresh-btn" onclick="loadAPIData()">🔄 Refresh Data</button>
+      </div>
+
+      <div id="loading" class="loading" style="display: none">Loading API data...</div>
+
+      <div id="content"></div>
+    </div>
+
+    <script>
+      async function loadAPIData() {
+        const loading = document.getElementById('loading')
+        const content = document.getElementById('content')
+
+        loading.style.display = 'block'
+        content.innerHTML = ''
+
+        try {
+          const response = await fetch('http://localhost:8000/api/products', {
+            headers: {
+              Accept: 'application/json',
+              'Cache-Control': 'no-cache',
+            },
+          })
+
+          const data = await response.json()
+          loading.style.display = 'none'
+
+          // API Summary Section
+          content.innerHTML = `
+                    <div class="section">
+                        <h2>📊 API Response Summary</h2>
+                        <div class="field"><span class="field-name">Status Code:</span> <span class="field-value">${
+                          response.status
+                        }</span></div>
+                        <div class="field"><span class="field-name">Total Products:</span> <span class="field-value">${
+                          data.total
+                        }</span></div>
+                        <div class="field"><span class="field-name">Products Returned:</span> <span class="field-value">${
+                          data.products?.length || 0
+                        }</span></div>
+                        <div class="field"><span class="field-name">Current Page:</span> <span class="field-value">${
+                          data.current_page
+                        }</span></div>
+                        <div class="field"><span class="field-name">Per Page:</span> <span class="field-value">${
+                          data.per_page
+                        }</span></div>
+                        <div class="field"><span class="field-name">Last Page:</span> <span class="field-value">${
+                          data.last_page
+                        }</span></div>
+                    </div>
+
+                    <div class="section">
+                        <h2>📦 All Product Details</h2>
+                        ${
+                          data.products
+                            ?.map(
+                              (product, index) => `
+                            <div class="product-card">
+                                <div class="product-header">${index + 1}. PRODUCT ID: ${
+                                product.id
+                              }</div>
+                                <div class="field"><span class="field-name">Name:</span> <span class="field-value">${
+                                  product.name
+                                }</span></div>
+                                <div class="field"><span class="field-name">Description:</span> <span class="field-value">${
+                                  product.description || 'No description'
+                                }</span></div>
+                                <div class="field"><span class="field-name">Price:</span> <span class="field-value">$${
+                                  product.price
+                                }</span></div>
+                                <div class="field"><span class="field-name">Discount:</span> <span class="field-value">${
+                                  product.discount
+                                }%</span></div>
+                                <div class="field"><span class="field-name">Stock:</span> <span class="field-value">${
+                                  product.stock
+                                }</span></div>
+                                <div class="field"><span class="field-name">Types:</span> <span class="field-value">${
+                                  product.types || 'Not specified'
+                                }</span></div>
+                                <div class="field"><span class="field-name">Colors:</span> <span class="field-value">${
+                                  product.colors || 'Not specified'
+                                }</span></div>
+                                <div class="field"><span class="field-name">Video:</span> <span class="field-value">${
+                                  product.video || 'No video'
+                                }</span></div>
+                                <div class="field"><span class="field-name">Image URL:</span> <span class="field-value">${
+                                  product.pics || 'No image'
+                                }</span></div>
+                                <div class="field"><span class="field-name">Status:</span> <span class="field-value status-${
+                                  product.status || 'active'
+                                }">${(product.status || 'active').toUpperCase()}</span></div>
+                                <div class="field"><span class="field-name">Featured:</span> <span class="field-value featured-${
+                                  product.is_featured ? 'yes' : 'no'
+                                }">${product.is_featured ? 'YES' : 'NO'}</span></div>
+                                ${
+                                  product.category
+                                    ? `<div class="field"><span class="field-name">Category:</span> <span class="field-value">${product.category.name} (ID: ${product.category.id})</span></div>`
+                                    : ''
+                                }
+                                ${
+                                  product.shop
+                                    ? `<div class="field"><span class="field-name">Shop:</span> <span class="field-value">${product.shop.name} (ID: ${product.shop.id})</span></div>`
+                                    : ''
+                                }
+                                <div class="field"><span class="field-name">Created:</span> <span class="field-value">${
+                                  product.created_at
+                                }</span></div>
+                                <div class="field"><span class="field-name">Updated:</span> <span class="field-value">${
+                                  product.updated_at
+                                }</span></div>
+                            </div>
+                        `
+                            )
+                            .join('') || '<p>No products found</p>'
+                        }
+                    </div>
+
+                    <div class="section">
+                        <h2>🔍 Current Filtering Rules</h2>
+                        <div class="field">✅ Only ACTIVE products shown</div>
+                        <div class="field">✅ Only products with STOCK > 0 shown</div>
+                        <div class="field">✅ Only FIRST image URL returned</div>
+                    </div>
+
+                    <div class="section">
+                        <h2>📋 Complete JSON Response</h2>
+                        <div class="json-output">${JSON.stringify(data, null, 2)}</div>
+                    </div>
+                `
+        } catch (error) {
+          loading.style.display = 'none'
+          content.innerHTML = `
+                    <div class="section">
+                        <h2 style="color: #f44336;">❌ API Error</h2>
+                        <div class="field"><span class="field-name">Error:</span> <span class="field-value">${error.message}</span></div>
+                        <div class="field">Make sure Laravel server is running on localhost:8000</div>
+                    </div>
+                `
+        }
+      }
+
+      // Load data when page loads
+      window.addEventListener('load', loadAPIData)
+    </script>
+  </body>
+</html>
